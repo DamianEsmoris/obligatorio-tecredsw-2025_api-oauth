@@ -19,6 +19,5 @@ then
 fi
 
 php artisan passport:keys
-php artisan passport:client --password
 
 php-fpm -F -y /etc/php-fpm.conf

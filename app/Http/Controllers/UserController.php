@@ -14,6 +14,14 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function GetAll(Request $request) {
+        return User::all();
+    }
+
+    public function Get(Request $request, int $id) {
+        return User::findOrFail($id);
+    }
+
     public function Register(Request $request){
 
         $validation = Validator::make($request->all(),[
@@ -26,14 +34,14 @@ class UserController extends Controller
             return response($validation->errors(), 401);
 
         return $this -> createUser($request);
-        
+
     }
 
     private function createUser($request){
         $user = new User();
         $user -> name = $request -> post("name");
         $user -> email = $request -> post("email");
-        $user -> password = Hash::make($request -> post("password"));   
+        $user -> password = Hash::make($request -> post("password"));
         $user -> save();
         return $user;
     }
@@ -45,9 +53,9 @@ class UserController extends Controller
     public function Logout(Request $request){
         $request->user()->token()->revoke();
         return ['message' => 'Token Revoked'];
-        
-        
+
+
     }
 
-    
+
 }

@@ -2,23 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Lcobucci\JWT\Parser;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
-
-
+use Lcobucci\JWT\Parser;
 
 class UserController extends Controller
 {
     public function GetAll(Request $request) {
-        return User::all();
+        if (Cache::has('users')) {
+            $users = Cache::get('users');
+            return $users;
+        }
+        $users = User::all();
+        Cache::put('users', $users, 180);
+        return $users;
     }
 
     public function Get(Request $request, int $id) {
+        if (Cache::has('users')) {
+            $users = Cache::get('users');
+            return $users->find($id);
+        }
         return User::findOrFail($id);
     }
 
@@ -43,6 +51,7 @@ class UserController extends Controller
         $user -> email = $request -> post("email");
         $user -> password = Hash::make($request -> post("password"));
         $user -> save();
+        Cache::forget('users');
         return $user;
     }
 

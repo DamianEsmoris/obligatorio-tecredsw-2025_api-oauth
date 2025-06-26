@@ -16,6 +16,8 @@ use App\Http\Controllers\UserController;
 */
 
 
+Route::get('/user',[UserController::class,"GetAll"]);
+Route::get('/user/{d}',[UserController::class,"Get"]);
 Route::post('/user',[UserController::class,"Register"]);
 Route::get('/validate',[UserController::class,"ValidateToken"])->middleware('auth:api');
 Route::get('/logout',[UserController::class,"Logout"])->middleware('auth:api');

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Lcobucci\JWT\Parser;
 
+use function PHPUnit\Framework\isNull;
+
 class UserController extends Controller
 {
     public function GetAll(Request $request) {
@@ -45,6 +47,22 @@ class UserController extends Controller
 
     }
 
+    public function PasswordRecovery(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'email' => 'required|exists:users,email',
+            'password' => 'required|confirmed'
+        ]);
+
+        if ($validation->fails())
+            return response()->json($validation->errors(), 401);
+
+        $user = User::where('email', $request->post("email"))->first();
+        $user->password = Hash::make($request->post("password"));
+        $user->save();
+        return $user;
+    }
+
     private function createUser($request){
         $user = new User();
         $user -> name = $request -> post("name");
@@ -62,8 +80,6 @@ class UserController extends Controller
     public function Logout(Request $request){
         $request->user()->token()->revoke();
         return ['message' => 'Token Revoked'];
-
-
     }
 
 

@@ -33,7 +33,7 @@ services:
       '
 
   oauth_php-fpm:
-    build: docker/php-fpm
+    build: docker/dev/php-fpm
     depends_on:
         oauth_db.configurator:
             condition: service_completed_successfully
@@ -46,7 +46,7 @@ services:
 
   oauth_apache:
     build:
-      context: docker/apache
+      context: docker/dev/apache
       args:
          PHP_FPM_URL: "oauth_php-fpm"
     ports:

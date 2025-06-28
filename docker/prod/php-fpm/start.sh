@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -n "${REPO_URL}" ]; then
+    git clone --depth=1 ${REPO_URL} /var/www/html
+    [ -d /var/www/html/storage ] && chmod -R 757 /var/www/html/storage
+fi
+
 [ -z "${SKIP_COMPOSER}" ] \
     && composer install
 
@@ -12,7 +17,7 @@ if [ -z "${SKIP_CONFIG_CACHE_DELETION}" ]; then
 fi
 
 [ -z "${SKIP_MIGRATIONS}" ] \
-    && php artisan migrate
+    && php artisan migrate --force
 
 [ -z "${SKIP_SEEDERS}" ] \
     && php artisan db:seed
@@ -27,5 +32,8 @@ then
 fi
 
 php artisan passport:keys
+
+[ -z "${SKIP_CONFIG_CACHE_DELETION}" ] \
+    && php artisan config:cache
 
 php-fpm -F -y /etc/php-fpm.conf
